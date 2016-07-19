@@ -278,6 +278,46 @@ sub delete :Local :Args(1) {
     return $c->res->redirect($uri);
 }
 
+=head2 action_router
+
+A router for dispatching handlers for sub-actions on a particular report,
+e.g. /report/1/inspect
+
+=cut
+
+sub action_router : Path('') : Args(2) {
+    my ( $self, $c, $id, $action ) = @_;
+
+    $c->go( 'inspect', [ $id ] ) if $action eq 'inspect';
+    $c->detach( '/page_error_404_not_found', [] );
+}
+
+sub inspect : Private {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    $c->forward( 'check_has_permission_to', [ 'report_inspect' ] );
+    $c->forward( 'format_problem_for_display' );
+};
+
+=head2 check_has_permission_to
+
+Ensure the currently logged-in user has a particular permission that applies
+to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
+
+=cut
+
+sub check_has_permission_to : Private {
+    my ( $self, $c, $permission ) = @_;
+
+    my $bodies = $c->stash->{problem}->bodies_str;
+
+    $c->detach('/page_error_403_access_denied', [])
+        unless $c->user_exists && $c->user->has_permission_to($permission, $bodies);
+};
+
+
 __PACKAGE__->meta->make_immutable;
 
 1;
