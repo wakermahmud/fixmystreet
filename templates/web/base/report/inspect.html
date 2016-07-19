@@ -1,1 +1,30 @@
-[% INCLUDE "report/display.html" %]
+[%
+    SET bodyclass = 'mappage';
+    PROCESS "report/photo-js.html";
+    PROCESS "maps/${map.type}.html";
+
+    problem_title = problem.title_safe _ ' - ' _ loc('Inspecting a problem');
+    INCLUDE 'header.html'
+        title = problem_title
+        rss = [ tprintf(loc('Updates to this problem, %s', "%s is the site name"), site_name), "/rss/$problem.id" ]
+        robots = 'index, nofollow';
+%]
+
+[% map_html %]
+</div>
+
+<div id="map_sidebar">
+  <div id="side-report">
+
+[% INCLUDE 'report/_main.html' %]
+
+[% INCLUDE 'report/updates.html' %]
+
+[% IF NOT shown_form %]
+    [% INCLUDE 'report/update-form.html' %]
+[% END %]
+
+  </div>
+</div>
+
+[% INCLUDE 'footer.html' %]
