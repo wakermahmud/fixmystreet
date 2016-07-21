@@ -300,6 +300,7 @@ sub inspect : Private {
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'check_has_permission_to', [ 'report_inspect' ] );
+    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
     $c->forward( 'format_problem_for_display' );
 };
 
