@@ -1,5 +1,5 @@
 [%
-    SET bodyclass = 'mappage';
+    SET bodyclass = 'mappage report_inspect';
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 
@@ -8,6 +8,9 @@
         title = problem_title
         rss = [ tprintf(loc('Updates to this problem, %s', "%s is the site name"), site_name), "/rss/$problem.id" ]
         robots = 'index, nofollow';
+
+    # We need this for the report state dropdown
+    PROCESS 'admin/report_blocks.html';
 %]
 
 [% map_html %]
@@ -15,16 +18,144 @@
 
 <div id="map_sidebar">
   <div id="side-report">
+    <div class="problem-header clearfix" problem-id="[% problem.id %]">
+      <h1>[% problem.title | html %]</h1>
 
-[% INCLUDE 'report/_main.html' %]
 
-[% INCLUDE 'report/updates.html' %]
+      [% INCLUDE 'report/photo.html' object=problem %]
+      <div class="moderate-display">
+          [% add_links( problem.detail ) | html_para %]
+      </div>
+    </div>
 
-[% IF NOT shown_form %]
-    [% INCLUDE 'report/update-form.html' %]
-[% END %]
+    <div class="problem-inspector-fields clearfix">
+      <form method="post" action="/report/[% problem.id %]/inspect">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        
+        <ul>
+          <li class="two-col">
+            <label>
+              Report ID:
+              <input type="text" disabled value="[% problem.id %]">
+            </label>
+          </li>
+          <li class="two-col">
+            <label>
+              Priority:
+              <select name="priority">
+                [%# TODO: Replace with cobrand-specific priorities %]
+                <option value="">--</option>
+                <option value="cat1a" selected>Cat 1A (2 hours)</option>
+                <option value="cat2">Cat 2 (24 hours)</option>
+                <option value="cat3">Cat 3 (10 working days)</option>
+              </select>
+            </label>
+          </li>
+          <li class="two-col">
+            <label>
+              State:
+              [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+              <select name="state"  id="state">
+                [% FOREACH group IN state_groups %]
+                  <optgroup label="[% group.0 %]">
+                    [% FOREACH state IN group.1 %]
+                      <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                    [% END %]
+                  </optgroup>
+                [% END %]
+              </select>
+            </label>
+          </li>
+          <li class="two-col">
+            <label>
+              Category:
+              [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+              <select name="category" id="category">
+                [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
+                <optgroup label="[% loc('Existing category') %]">
+                  <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+                </optgroup>
+                [% END %]
+                [% IF categories.size %]
+                  <optgroup label="[% loc('Available categories') %]">
+                    [% FOREACH cat IN categories %]
+                      <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
+                    [% END %]
+                  </optgroup>
+                [% END %]
+              </select>
+                </label>
+              </li>
+              <li>
+                <label>
+                  Detailed location:
+                  <input type="text" name="detailed_location" value="">
+                </label>
+              </li>
+              <li>
+                <label>
+                  Detailed problem information:
+                  <textarea rows="2" name="detailed_information"></textarea>
+                </label>
+              </li>
+              <li>
+                <label>
+                  Traffic management information:
+                  <textarea rows="2" name="detailed_information"></textarea>
+                </label>
+              </li>
+            </ul>
+      
+          </form>
+        </div>
 
-  </div>
-</div>
+        [% INCLUDE 'report/updates.html' %]
 
-[% INCLUDE 'footer.html' %]
+      </div>
+      
+      <div id="side-report-secondary">
+        <div class="problem-timeline">
+          <ul>
+            <li>[% INCLUDE 'report/_report_meta_info.html' %]</li>
+            <li>[% INCLUDE 'report/_main_sent_info.html' %]</li>
+          </ul>
+        </div>
+        <div class="problem-inspector-fields clearfix">
+          <ul>
+            <li>Actions:</li>
+            <li class="two-col">
+              <a href="#" class="btn">Add to my planner</a>
+            </li>
+            <li class="two-col">
+              <a href="#" class="btn">Show work order</a>
+            </li>
+            <li>
+              <label>
+                Add an internal note:
+                <textarea rows="2" name="internal_note"></textarea>
+              </label>
+            </li>
+            <li class="two-col">
+              <a href="#">Use response template</a>
+            </li>
+            <li class="two-col right">
+              <a href="#" class="btn">Add internal note</a>
+            </li>
+            <li>
+              <label>
+                Publish an official reply:
+                <textarea rows="2" name="official_reply"></textarea>
+              </label>
+            </li>
+            <li class="two-col">
+              <a href="#">Use response template</a>
+            </li>
+            <li class="two-col right">
+              <a href="#" class="btn">Publish official reply</a>
+            </li>
+            
+        </div>
+      </div>
+    </div>
+
+    [% INCLUDE 'footer.html' %]
