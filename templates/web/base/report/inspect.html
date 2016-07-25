@@ -17,7 +17,7 @@
 </div>
 
 <div id="map_sidebar">
-  <form method="post" action="/report/[% problem.id %]/inspect">
+  <form method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
     <div id="side-report">
       <div class="problem-header clearfix" problem-id="[% problem.id %]">
         <h1>[% problem.title | html %]</h1>

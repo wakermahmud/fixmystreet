@@ -324,6 +324,8 @@ sub inspect : Private {
             $problem->set_extra_metadata( $_ => $c->get_param($_) );
         }
         $problem->update;
+
+        $c->res->redirect( $c->uri_for( '/report', $problem->id, 'inspect' ) );
     }
 };
 
