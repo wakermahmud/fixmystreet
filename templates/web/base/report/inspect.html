@@ -17,21 +17,17 @@
 </div>
 
 <div id="map_sidebar">
-  <div id="side-report">
-    <div class="problem-header clearfix" problem-id="[% problem.id %]">
-      <h1>[% problem.title | html %]</h1>
-
-
-      [% INCLUDE 'report/photo.html' object=problem %]
-      <div class="moderate-display">
-          [% add_links( problem.detail ) | html_para %]
+  <form method="post" action="/report/[% problem.id %]/inspect">
+    <div id="side-report">
+      <div class="problem-header clearfix" problem-id="[% problem.id %]">
+        <h1>[% problem.title | html %]</h1>
+        [% INCLUDE 'report/photo.html' object=problem %]
+        <div>
+            [% add_links( problem.detail ) | html_para %]
+        </div>
       </div>
-    </div>
 
-    <div class="problem-inspector-fields clearfix">
-      <form method="post" action="/report/[% problem.id %]/inspect">
-        <input type="hidden" name="token" value="[% csrf_token %]">
-        
+      <div class="problem-inspector-fields clearfix">
         <ul>
           <li class="two-col">
             <label>
@@ -43,11 +39,10 @@
             <label>
               Priority:
               <select name="priority">
-                [%# TODO: Replace with cobrand-specific priorities %]
-                <option value="">--</option>
-                <option value="cat1a" selected>Cat 1A (2 hours)</option>
-                <option value="cat2">Cat 2 (24 hours)</option>
-                <option value="cat3">Cat 3 (10 working days)</option>
+                <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
+                [% FOREACH priority IN priorities %]
+                  <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
+                [% END %]
               </select>
             </label>
           </li>
@@ -86,31 +81,40 @@
               </select>
                 </label>
               </li>
-              <li>
+
+              [% SET local_coords = problem.local_coords; %]
+              <li class="two-col">
                 <label>
-                  Detailed location:
-                  <input type="text" name="detailed_location" value="">
+                  Easting:
+                  <input type="text" name="easting" value="[% local_coords.0 %]">
+                </label>
+              </li>
+              <li class="two-col">
+                <label>
+                  Northing:
+                  <input type="text" name="easting" value="[% local_coords.1 %]">
                 </label>
               </li>
               <li>
+                <a href="#">Use my current location</a>
+              </li>
+
+              <li>
                 <label>
                   Detailed problem information:
-                  <textarea rows="2" name="detailed_information"></textarea>
+                  <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
                 </label>
               </li>
               <li>
                 <label>
                   Traffic management information:
-                  <textarea rows="2" name="detailed_information"></textarea>
+                  <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
                 </label>
               </li>
             </ul>
-      
-          </form>
         </div>
 
         [% INCLUDE 'report/updates.html' %]
-
       </div>
       
       <div id="side-report-secondary">
@@ -154,8 +158,14 @@
               <a href="#" class="btn">Publish official reply</a>
             </li>
             
+            <li>
+              <input type="hidden" name="token" value="[% csrf_token %]">
+              <input type="submit" value="Save changes" name="save" />
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
+  </form>
+</div>
 
-    [% INCLUDE 'footer.html' %]
+  [% INCLUDE 'footer.html' %]

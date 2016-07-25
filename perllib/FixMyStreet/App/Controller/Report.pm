@@ -300,8 +300,31 @@ sub inspect : Private {
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'check_has_permission_to', [ 'report_inspect' ] );
-    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
     $c->forward( 'format_problem_for_display' );
+
+    my $problem = $c->stash->{problem};
+
+    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+
+    # The available priorities for this problem are dependent on the cobrand it
+    # was reported to, not necessarily the active cobrand (e.g. inspecting a
+    # report on fms.com that was sent to Oxfordshire), so make sure the correct
+    # priorities are available for selection.
+    $c->stash->{priorities} => {};
+    if ( $c->cobrand->can('get_body_handler_for_problem') ) {
+        my $handler = $c->cobrand->get_body_handler_for_problem($c->stash->{problem});
+        if ( $handler->can('problem_response_priorities') ) {
+            $c->stash->{priorities} = $handler->problem_response_priorities;
+        }
+    }
+
+    if ( $c->get_param('save') ) {
+        $c->forward('/auth/check_csrf_token');
+        foreach (qw/priority detailed_information traffic_information/) {
+            $problem->set_extra_metadata( $_ => $c->get_param($_) );
+        }
+        $problem->update;
+    }
 };
 
 sub map : Private {
