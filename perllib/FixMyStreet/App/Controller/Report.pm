@@ -320,9 +320,30 @@ sub inspect : Private {
 
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
+
         foreach (qw/priority detailed_information traffic_information/) {
             $problem->set_extra_metadata( $_ => $c->get_param($_) );
         }
+
+        # Handle the state changing
+        my $old_state = $problem->state;
+        $problem->state($c->get_param('state'));
+        if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
+            $problem->confirmed( \'current_timestamp' );
+        }
+        if ( $problem->state eq 'hidden' ) {
+            $problem->get_photoset->delete_cached;
+        }
+        if ( $problem->state ne $old_state ) {
+            $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
+        }
+        if ((my $category = $c->get_param('category')) ne $problem->category) {
+            $problem->category($category);
+            my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+            my $bs = join( ',', map { $_->body_id } @contacts );
+            $problem->bodies_str($bs);
+        }
+
         $problem->update;
 
         $c->res->redirect( $c->uri_for( '/report', $problem->id, 'inspect' ) );
