@@ -1,0 +1,98 @@
+[% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
+[% BLOCK second_column -%]
+  <div id="side-report-secondary">
+    <h3>Inspector Actions</h3>
+    <div class="problem-inspector-fields clearfix">
+      <form method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
+      <ul>
+        <li class="two-col">
+          <label>
+            Report ID:
+            <input type="text" disabled value="[% problem.id %]">
+          </label>
+        </li>
+        <li class="two-col">
+          <label>
+            Priority:
+            <select name="priority">
+              <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
+              [% FOREACH priority IN priorities %]
+                <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
+              [% END %]
+            </select>
+          </label>
+        </li>
+        <li class="two-col">
+          <label>
+            State:
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+            <select name="state"  id="state">
+              [% FOREACH group IN state_groups %]
+                <optgroup label="[% group.0 %]">
+                  [% FOREACH state IN group.1 %]
+                    <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                  [% END %]
+                </optgroup>
+              [% END %]
+            </select>
+          </label>
+        </li>
+        <li class="two-col">
+          <label>
+            Category:
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+            <select name="category" id="category">
+              [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
+              <optgroup label="[% loc('Existing category') %]">
+                <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+              </optgroup>
+              [% END %]
+              [% IF categories.size %]
+                <optgroup label="[% loc('Available categories') %]">
+                  [% FOREACH cat IN categories %]
+                    <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
+                  [% END %]
+                </optgroup>
+              [% END %]
+            </select>
+              </label>
+            </li>
+
+            [% SET local_coords = problem.local_coords; %]
+            <li class="two-col">
+              <label>
+                Easting:
+                <input type="text" name="easting" value="[% local_coords.0 %]">
+              </label>
+            </li>
+            <li class="two-col">
+              <label>
+                Northing:
+                <input type="text" name="easting" value="[% local_coords.1 %]">
+              </label>
+            </li>
+            <li>
+              <a href="#">Use my current location</a>
+            </li>
+
+            <li>
+              <label>
+                Detailed problem information:
+                <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
+              </label>
+            </li>
+            <li>
+              <label>
+                Traffic management information:
+                <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
+              </label>
+            </li>
+            <li>
+              <input type="hidden" name="token" value="[% csrf_token %]">
+              <input type="submit" value="Save changes" name="save" />
+            </li>
+          </ul>
+          </form>
+      </div>
+  </div>
+[%- END %]
