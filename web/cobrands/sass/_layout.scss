@@ -336,16 +336,16 @@ body.mappage.admin {
 // Some report pages have a second column of UI elements so make room
 body.mappage.twocols {
   #map_box {
-    left: 66%;
+    #{$left}: 58em;
   }
 
   #map_sidebar {
-    width: 66%;
+    width: 58em;
     padding: 0;
 
     #side-report, #side-report-secondary {
       width: 50%;
-      float: left;
+      float: #{$left};
       padding: 1em;
       box-sizing: border-box;
     }
