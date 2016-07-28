@@ -383,10 +383,12 @@ body.mappage.admin {
 // elements, one group clip outside padding, one clips inside. So using padding
 // in #map_sidebar works in Chrome/Safari but not in Firefox/IE. Instead, we
 // add some extra height using ::after.
+// https://bugzilla.mozilla.org/show_bug.cgi?id=748518
 #map_sidebar::after {
     content: "";
     display: block;
     height: 4em;
+    clear: both;
 }
 
 // IE<=8 does not support ::after
