@@ -3,13 +3,13 @@
   <div id="side-report-secondary">
     <div class="problem-inspector-fields clearfix">
       <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
-        <p>
+        <p class="left">
           <label>
             Report ID:
             <input type="text" readonly value="[% problem.id %]">
           </label>
         </p>
-        <p>
+        <p class="right">
           <label>
             Priority:
             <select name="priority">
@@ -20,7 +20,7 @@
             </select>
           </label>
         </p>
-        <p>
+        <p class="left">
           <label>
             State:
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
@@ -35,7 +35,7 @@
             </select>
           </label>
         </p>
-        <p>
+        <p class="right">
           <label>
             Category:
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
@@ -55,19 +55,19 @@
             </select>
           </label>
         </p>
-        <p>
+        <p class="left">
           <label>
             Longitude:
             <input type="text" name="longitude" value="[% problem.longitude %]" readonly>
           </label>
         </p>
-        <p>
+        <p class="right">
           <label>
             Latitude:
             <input type="text" name="latitude" value="[% problem.latitude %]" readonly>
           </label>
         </p>
-        <p>
+        <p style="clear:both;">
           <a href="#" id="geolocate_link">Use my current location</a>,
           or drag the pin on the map &raquo;
         </p>

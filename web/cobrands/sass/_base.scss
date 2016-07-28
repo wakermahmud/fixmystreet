@@ -391,6 +391,22 @@ label{
   margin:1em 0;
 }
 
+.problem-inspector-fields {
+  select {
+    height: 2.4em; // match text inputs
+  }
+
+  p.left {
+    width: 46%;
+    float: #{$left};
+  }
+
+  p.right {
+    width: 46%;
+    float: #{$right};
+  }
+}
+
 
 // form errors
 div.form-error,
