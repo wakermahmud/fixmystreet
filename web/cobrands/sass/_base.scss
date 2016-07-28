@@ -296,6 +296,11 @@ input[type=email] {
   line-height: 1em;
 }
 
+input[readonly] {
+  border-color: #cccccc;
+  color: #888888;
+}
+
 label{
   display: block;
   margin-top: 1.25em;
