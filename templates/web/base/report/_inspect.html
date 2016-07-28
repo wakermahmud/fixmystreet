@@ -1,14 +1,13 @@
 [% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
 [% BLOCK second_column -%]
   <div id="side-report-secondary">
-    <h3>Inspector Actions</h3>
     <div class="problem-inspector-fields clearfix">
-      <form method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
+      <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
       <ul>
         <li class="two-col">
           <label>
             Report ID:
-            <input type="text" disabled value="[% problem.id %]">
+            <input type="text" readonly value="[% problem.id %]">
           </label>
         </li>
         <li class="two-col">
@@ -58,21 +57,21 @@
               </label>
             </li>
 
-            [% SET local_coords = problem.local_coords; %]
             <li class="two-col">
               <label>
-                Easting:
-                <input type="text" name="easting" value="[% local_coords.0 %]">
+                Longitude:
+                <input type="text" name="longitude" value="[% problem.longitude %]" readonly>
               </label>
             </li>
             <li class="two-col">
               <label>
-                Northing:
-                <input type="text" name="easting" value="[% local_coords.1 %]">
+                Latitude:
+                <input type="text" name="latitude" value="[% problem.latitude %]" readonly>
               </label>
             </li>
             <li>
-              <a href="#">Use my current location</a>
+              <a href="#" id="geolocate_link">Use my current location</a>,
+              or drag the pin on the map &raquo;
             </li>
 
             <li>
