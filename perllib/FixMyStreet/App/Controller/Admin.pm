@@ -920,7 +920,7 @@ sub users: Path('users') : Args(0) {
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
 
-        my $users = $c->model('DB::User')->search(
+        my $users = $c->cobrand->users->search(
             {
                 -or => [
                     email => { ilike => $isearch },
@@ -952,7 +952,7 @@ sub users: Path('users') : Args(0) {
         $c->forward('fetch_all_bodies');
 
         # Admin users by default
-        my $users = $c->model('DB::User')->search(
+        my $users = $c->cobrand->users->search(
             { from_body => { '!=', undef } },
             { order_by => 'name' }
         );
@@ -1120,7 +1120,9 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    my $user = $c->model('DB::User')->find( { id => $id } );
+    my $user = $c->cobrand->users->find( { id => $id } );
+    $c->detach( '/page_error_404_not_found' ) unless $user;
+
     $c->stash->{user} = $user;
 
     $c->forward('fetch_all_bodies');

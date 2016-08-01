@@ -50,6 +50,13 @@ sub updates_restriction {
     return $rs->to_body($self->council_id);
 }
 
+sub users_restriction {
+    my ($self, $rs) = @_;
+    # Council admins can only edit users who are members of the public or that
+    # same council, i.e. not users from other councils.
+    return $rs->search( { from_body => [ undef, $self->council_id ] } );
+}
+
 sub base_url {
     my $self = shift;
     my $base_url = FixMyStreet->config('BASE_URL');
