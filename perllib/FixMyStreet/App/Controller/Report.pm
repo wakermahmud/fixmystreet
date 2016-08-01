@@ -310,7 +310,6 @@ sub inspect : Private {
     # was reported to, not necessarily the active cobrand (e.g. inspecting a
     # report on fms.com that was sent to Oxfordshire), so make sure the correct
     # priorities are available for selection.
-    $c->stash->{priorities} => {};
     if ( $c->cobrand->can('get_body_handler_for_problem') ) {
         my $handler = $c->cobrand->get_body_handler_for_problem($c->stash->{problem});
         if ( $handler->can('problem_response_priorities') ) {
