@@ -4,84 +4,68 @@
     <div class="problem-inspector-fields clearfix">
       <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
         <p class="left">
-          <label>
-            Report ID:
-            <input type="text" readonly value="[% problem.id %]">
-          </label>
+          <label for="problem_id">Report ID:</label>
+          <input type="text" readonly id="problem_id" value="[% problem.id %]">
         </p>
         <p class="right">
-          <label>
-            Priority:
-            <select name="priority">
-              <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
-              [% FOREACH priority IN priorities %]
-                <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
-              [% END %]
-            </select>
-          </label>
+          <label for="problem_priority">Priority:</label>
+          <select name="priority" id="problem_priority">
+            <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
+            [% FOREACH priority IN priorities %]
+              <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
+            [% END %]
+          </select>
         </p>
         <p class="left">
-          <label>
-            State:
+          <label for="state">State:</label>
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-            <select name="state"  id="state">
-              [% FOREACH group IN state_groups %]
-                <optgroup label="[% group.0 %]">
-                  [% FOREACH state IN group.1 %]
-                    <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-                  [% END %]
-                </optgroup>
-              [% END %]
-            </select>
-          </label>
-        </p>
-        <p class="right">
-          <label>
-            Category:
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-            <select name="category" id="category">
-              [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
-              <optgroup label="[% loc('Existing category') %]">
-                <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+          <select name="state" id="state">
+            [% FOREACH group IN state_groups %]
+              <optgroup label="[% group.0 %]">
+                [% FOREACH state IN group.1 %]
+                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                [% END %]
               </optgroup>
-              [% END %]
-              [% IF categories.size %]
-                <optgroup label="[% loc('Available categories') %]">
-                  [% FOREACH cat IN categories %]
-                    <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
-                  [% END %]
-                </optgroup>
-              [% END %]
-            </select>
-          </label>
-        </p>
-        <p class="left">
-          <label>
-            Longitude:
-            <input type="text" name="longitude" value="[% problem.longitude %]" readonly>
-          </label>
+            [% END %]
+          </select>
         </p>
         <p class="right">
-          <label>
-            Latitude:
-            <input type="text" name="latitude" value="[% problem.latitude %]" readonly>
-          </label>
+          <label for="category">Category:</label>
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+          <select name="category" id="category">
+            [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
+            <optgroup label="[% loc('Existing category') %]">
+              <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+            </optgroup>
+            [% END %]
+            [% IF categories.size %]
+              <optgroup label="[% loc('Available categories') %]">
+                [% FOREACH cat IN categories %]
+                  <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
+                [% END %]
+              </optgroup>
+            [% END %]
+          </select>
+        </p>
+        <p class="left">
+          <label for="problem_longitude">Longitude:</label>
+          <input type="text" name="longitude" id="problem_longitude" value="[% problem.longitude %]" readonly>
+        </p>
+        <p class="right">
+          <label for="problem_latitude">Latitude:</label>
+          <input type="text" name="latitude" id="problem_latitude" value="[% problem.latitude %]" readonly>
         </p>
         <p style="clear:both;">
           <a href="#" id="geolocate_link">Use my current location</a>,
           or drag the pin on the map &raquo;
         </p>
         <p>
-          <label>
-            Detailed problem information:
-            <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
-          </label>
+          <label for="detailed_information">Detailed problem information:</label>
+          <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
         </p>
         <p>
-          <label>
-            Traffic management information:
-            <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
-          </label>
+          <label for="traffic_information">Traffic management information:</label>
+          <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
         </p>
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">

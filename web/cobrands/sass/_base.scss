@@ -401,13 +401,20 @@ label{
     height: 2.4em; // match text inputs
   }
 
-  p.left {
+  p.left,
+  p.right {
     width: 46%;
+
+    label {
+        margin-top: 0;
+    }
+  }
+
+  p.left {
     float: #{$left};
   }
 
   p.right {
-    width: 46%;
     float: #{$right};
   }
 }
